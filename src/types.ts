@@ -1,0 +1,10 @@
+export type Candle = {time:number; open:number; high:number; low:number; close:number; volume:number};
+export type Account = {cash:number;btc:number;fees:number;equity:number;return_pct:number;max_drawdown:number;allocation:number;trades:number};
+export type Decision = {index:number;time:number;observed_at:number;target:number;probabilities:Record<string,number>;latency_ms:number;source:string;note:string;side:string;quantity:number;price:number;fee:number};
+export type Point = Account & {time:number;buy_hold:number;rule:number};
+export type Run = {id:string;created_at:number;mode:'historical'|'live';strategy:'rule'|'jev';start:string;end:string;max_calls:number;calls:number;total:number;cursor:number;warmup:number;candles:Candle[];events:Decision[];points:Point[];account:Account;price:number;quote_at:number|null;running:boolean;finished:boolean;error:string|null;last_decision:Decision|null};
+export type Saved = Pick<Run,'id'|'created_at'|'mode'|'strategy'|'start'|'end'|'running'|'calls'> & {steps:number};
+export type Config = {mode:Run['mode'];strategy:Run['strategy'];start:string;end:string;max_calls:number};
+export const money = (n:number,digits=2) => n.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+export const stamp = (n:number) => new Date(n).toISOString().slice(0,16).replace('T',' ');
+export const initial:Account = {cash:10000,btc:0,fees:0,equity:10000,return_pct:0,max_drawdown:0,allocation:0,trades:0};
