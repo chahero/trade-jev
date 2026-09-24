@@ -1,95 +1,115 @@
 # Jev / Trader
 
-BTC/USDT 과거 데이터를 재생하며 Jev의 판단을 관찰하는 로컬 모의매매 앱.
-같은 계좌 엔진으로 실시간 모의계좌도 실행합니다. 실제 거래소 주문 기능은 없습니다.
+[한국어](README.ko.md)
 
-## 실행
+**Rewind the Bitcoin market. Watch Jev decide.**
 
-Windows, Python 3.11 이상, Node.js 20.19+/22.12+, uv가 필요합니다.
+A local Bitcoin paper-trading lab powered by TypeSafe Jev. Replay real BTC/USDT market history, watch Jev choose a portfolio allocation, and compare its account with a fixed rule, buy-and-hold, and cash. Switch to live paper trading to observe decisions as new candles close.
+
+Built to explore how the information given to an agent shapes its decisions. Uses simulated funds; the app has no exchange order execution. The dashboard currently uses Korean.
+
+## Watch the strategies
+
+| Jev · real API decisions | Rule · fixed moving-average strategy |
+| --- | --- |
+| [![Jev decision replay](media/jev-preview.gif)](media/jev.mp4) | [![Rule strategy replay](media/rule-preview.gif)](media/rule.mp4) |
+| [Full video](media/jev.mp4) · [Screenshot](media/jev.png) · [Recorded decisions](media/jev-run.json) | [Full video](media/rule.mp4) · [Screenshot](media/rule.png) · [Recorded decisions](media/rule-run.json) |
+
+These are **replays of saved decisions**, with one 15-minute step per video second. Inference waiting time is omitted. Preparing the Jev recording used 48 API calls; watching or replaying it makes no new calls. Both runs use Binance BTCUSDT data from **January 1, 2025, 00:00–12:00 UTC**, 10,000 USDT, a 0.10% fee and 0.05% slippage per side, and 96 preceding candles for warm-up. The selected date range is one day; the demo stops after its first 48 steps.
+
+| This recorded sample | Jev | Rule |
+| --- | ---: | ---: |
+| Decisions / executed trades | 48 / 3 | 48 / 4 |
+| Ending equity (USDT) | 9,941.78 | 9,938.72 |
+| Return | −0.58% | −0.61% |
+| Maximum drawdown | 0.76% | 0.61% |
+| Fees paid (USDT) | 5.02 | 9.99 |
+
+A single short demonstration, not evidence of strategy profitability. Equity includes unsold BTC; drawdown is measured at candle closes. [Recording details and reproduction](media/README.md) · [Exact results](media/demo-results.json).
+
+## What you can explore
+
+- **Historical simulation:** step through 15-minute candles or run a selected UTC date range.
+- **Live paper account:** follow public prices and make one decision per newly closed candle.
+- **Visible decisions:** target BTC allocation, returned choice probabilities, inference latency, fills, fees, and account history.
+- **Matched comparisons:** selected strategy, a 12/48-candle moving-average rule, buy-and-hold, and cash under the same starting conditions.
+- **Saved experiments:** reopen runs, rewind recorded decisions without API calls, and export results as JSON.
+
+## Run locally
+
+Windows quick start. Install Git, Python 3.11+, Node.js 20.19+ (or 22.12+), and [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
 
 ```powershell
+git clone https://github.com/chahero/trade-jev.git
+cd trade-jev
 .\setup.cmd
 .\start.cmd
 ```
 
-브라우저에서 http://127.0.0.1:8765 를 엽니다. 현재 프로젝트는 설치 및 빌드되어
-있으므로 `start.cmd`부터 실행하면 됩니다. 서버는 로컬 주소에만 바인딩합니다.
-`.env`의 `TYPESAFE_API_KEY`를 서버에서 읽습니다. 키는 프런트엔드나 내보내기에
-포함되지 않습니다. `.env`, 시세 캐시, 실험 DB는 Git에서 제외합니다.
+Open [localhost:8765](http://127.0.0.1:8765/) and keep the server terminal open while using the app. The scripts install locked dependencies, build the frontend, and serve it with FastAPI on the local interface.
 
-## 사용 순서
+**Start with the rule strategy:** it needs no model API key. An internet connection is required for uncached Binance data. No exchange account or exchange API key is needed.
 
-1. 과거 시뮬레이션에서 UTC 시작일/종료일(종료일 미포함), 전략, 호출 한도를 선택합니다.
-2. 데이터 불러오기 → 한 단계 또는 재생. 초기 자금은 10,000 USDT입니다.
-3. 처음에는 무료 규칙 전략으로 확인하고, Jev로 새 실험을 시작합니다.
-4. 기록 되감기/슬라이더는 저장된 결과만 재생하며 API를 호출하지 않습니다.
-   최신으로 버튼을 눌러야 새 판단을 이어갈 수 있습니다.
-5. 저장된 실험 선택으로 이전 계좌를 복원하고, 거래 기록의 다운로드 버튼으로
-   실제 관찰 데이터·설정·판단·체결·계좌 결과를 JSON으로 내보냅니다.
-6. 실시간 모의매매 → 모의계좌 만들기 → 실시간 연결. 중지는 연결 중지 버튼.
-   한 번에 한 개의 실시간 계좌만 연결할 수 있습니다.
+**Enable Jev:** copy `.env.example` to `.env` if that file does not already exist, set `TYPESAFE_API_KEY` to your own TypeSafe key, and restart the server. The key is read only by the backend. `.env`, local market caches, and the experiment database are excluded from Git.
 
-실시간 모드에서는 서버가 켜져 있으면 브라우저를 닫아도 계속합니다.
-서버 재시작 시 자동으로 정지하며 사용자가 연결을 눌러 재개합니다.
-네트워크/API 오류가 나면 정지하고 오류를 표시합니다. Jev 실패를 규칙 판단으로
-몰래 대체하지 않습니다. 과거 모드는 브라우저의 순차 요청으로만 진행합니다.
-
-## 시뮬레이션 규칙
-
-- 시장: Binance Spot BTCUSDT, 15분봉. UTC 기준 완료된 날짜 1~31일.
-- 최초 96봉(하루)은 관찰용 워밍업. 요청 기간 전날 데이터를 추가로 확보합니다.
-- 입력: 그 시점까지 마감된 최근 96봉, 현금/BTC 잔고, 비용 조건.
-- 행동: BTC 목표 비중 0/25/50/75/100%. 현물 매수·매도·유지, 공매도 없음.
-- 과거 체결: 이전 봉 마감 후 판단 → 다음 봉 시가 ± 슬리피지에 체결,
-  다음 봉 종가로 평가. 미관찰 가격은 모델과 브라우저 응답에 포함하지 않습니다.
-- 실시간 체결: 최신 마감 봉으로 판단 → 응답 이후 받은 현재가 ± 슬리피지.
-  시작/재개 시 최신 봉부터 판단하며 놓친 봉들을 과거 가격으로 소급 체결하지 않습니다.
-- 수수료 편도 0.10%, 슬리피지 편도 0.05%, 최소 리밸런싱 차액 10 USDT.
-  목표 비중은 비용을 반영해 계산하며 잔고 이상의 주문을 만들지 않습니다.
-- 비교: 선택 전략, 12/48봉 이동평균 규칙(±0.2% 중립 구간이면 50%),
-  최초 체결 시 전액 매수 후 보유, 현금 보유. 초기 자금·수수료·슬리피지는 같습니다.
-- 수익률은 평가 자산 기준이며 미청산 BTC를 포함합니다. 마지막 자동 청산은 없습니다.
-  과거 MDD는 15분봉 종가 평가 기준입니다. 봉 안의 낙폭은 측정하지 않습니다.
-- 과거 모드는 추론 동안 시뮬레이션 시간이 멈춥니다. 실제 추론 지연에 따른
-  과거 체결 지연을 재현하지 않으므로 실시간 결과와 같을 수는 없습니다.
-- Jev 선택 확률은 행동 선택의 확률이지 가격 상승/수익 확률이 아닙니다.
-  API가 설명을 제공하지 않으므로 매매 이유를 임의 생성하지 않습니다.
-- 재실행은 새 API 판단을 받으므로 결과가 달라질 수 있습니다. 모델이 과거 시장을
-  학습했을 가능성은 입력의 미래 정보 차단만으로 배제할 수 없습니다.
-
-## 데이터 및 저장
-
-Binance 공개 REST `https://data-api.binance.vision`에서 시세를 받으며 거래소 키는
-필요 없습니다. 데이터는 생성/누락값 대체 없이 실제 OHLCV만 사용합니다.
-페이지 조회 결과에서 시간 간격·중복·기간 완결성을 검사하고 `data/market`에 캐시합니다.
-현재는 일/월 ZIP 대신 REST 페이징을 사용합니다. 31일 제한에서는 요청량이 작고
-동일 API로 최근 시세까지 이어갈 수 있기 때문입니다.
-
-실시간은 5초 간격 REST 폴링이며 WebSocket 버전은 아닙니다. 판단은 새 15분봉마다
-한 번입니다. 자산 비교 그래프와 판단 기록은 판단 시점마다 저장하고, 현재 자산은
-시세 조회마다 갱신합니다. 실시간 캔들 차트는 최근 96개의 마감 봉입니다.
-
-`data/runs.sqlite3`에 설정, 관찰 시세, 호출 횟수, 판단, 거래, 계좌 곡선을 저장합니다.
-실패한 Jev 요청도 호출 한도에 포함합니다. 기본 한도 100회, 최대 3,000회.
-한도는 요청 횟수 기준이며 금액 기준 예산은 아닙니다. 30일 전체는 2,880개 판단입니다.
-호출 가격을 알 수 없어 가상의 비용 금액을 표시하지 않습니다.
-
-## 개발 / 검증
-
-```powershell
-# 터미널 1
-.venv\Scripts\python.exe -m uvicorn server.app:app --host 127.0.0.1 --port 8765
-# 터미널 2
-npm run dev
-# 검사
-.venv\Scripts\python.exe -m pytest -q
-npm run build
-# 실제 시세 통합 검사; --jev를 넣으면 Jev를 정확히 한 번 호출합니다.
-.venv\Scripts\python.exe scripts/smoke.py --jev
+```dotenv
+TYPESAFE_API_KEY=your_typesafe_api_key
 ```
 
-React + Vite + TypeScript / FastAPI / SQLite. 정적 빌드는 FastAPI에서 함께 제공합니다.
-API 서버와 로컬 DB가 필요하므로 현재 버전을 Vercel 정적 배포만으로 실행할 수는 없습니다.
+New Jev decisions use your API allowance and may incur charges. The default request limit is 100 and the maximum is 3,000; failed requests count too. The limit counts requests, not money. A full 30-day simulation requires 2,880 decisions. Saved replays use zero new requests.
 
-디자인 기준: [시안](docs/design-concept.png), [구현 명세](docs/design.md).
-공식 데이터 문서: https://github.com/binance/binance-spot-api-docs/blob/master/faqs/market_data_only.md
+## Try a first experiment
+
+1. In **과거 시뮬레이션** (historical simulation), choose UTC dates, **규칙 전략** (rule), and click **데이터 불러오기** (load data). The end date is exclusive.
+2. Click **한 단계** (one step) or **재생** (play). Each step is a decision opportunity; it does not necessarily create a trade.
+3. Start another experiment with **Jev · TypeSafe** and a small call limit to compare choices.
+4. Use **기록 되감기** (rewind) or the timeline to review saved decisions. **최신으로** (latest) returns to the state from which new decisions can continue.
+5. Select an earlier run under **저장된 실험** (saved experiments), or use the download button to export its JSON.
+
+For live mode, choose **실시간 모의매매** → **모의계좌 만들기** → **실시간 연결**. Only one live account can run at a time. It continues while the server runs, even if the browser closes; restarting the server pauses it. Network or API errors pause the run and are displayed. Jev failures are not replaced with rule decisions.
+
+## What Jev sees and chooses
+
+Each request contains the latest **96 closed 15-minute OHLCV candles**, the current paper account, and transaction-cost constraints. Instructions ask Jev to balance return, drawdown, and costs for a long-only spot account. It chooses a target BTC allocation of **0%, 25%, 50%, 75%, or 100%**; the account engine determines whether a rebalance is needed.
+
+The current input does not include news, order books, or a separate library of indicators. Changing the observation window, added information, or decision instructions changes the experiment. See the exact request in [server/policy.py](server/policy.py).
+
+Returned probabilities describe the model's choice among allocations, **not the probability of profit**. The API does not provide a trading rationale, so the app does not invent one.
+
+## Execution and data
+
+| | Historical | Live paper trading |
+| --- | --- | --- |
+| Decision input | Candles closed before the next execution bar | Latest closed candle and recent history |
+| Simulated fill | Next candle open ± slippage | Quote received after inference ± slippage |
+| Timing | Sequential steps requested by the browser | Server polls every 5 seconds; one decision per new 15-minute candle |
+| Missed time | Advance one bar at a time | Resume from the latest candle; no backdated fills |
+
+Both modes start with 10,000 USDT, use a 0.10% fee and 0.05% slippage per side, and require a rebalance difference of at least 10 USDT. There is no leverage, short selling, or automatic liquidation at the end. The rule targets 100% or 0% outside a ±0.2% band between its 12/48-candle moving averages, and 50% inside it.
+
+Market data uses the [Binance market-data-only REST API](https://github.com/binance/binance-spot-api-docs/blob/master/faqs/market_data_only.md). The loader checks candle spacing, duplicates, and coverage before caching real OHLCV in `data/market`. It does not synthesize missing prices. Historical ranges cover 1–31 completed UTC days. Runs are stored in `data/runs.sqlite3`.
+
+Historical inference pauses simulated time, so it does not model delayed fills caused by actual inference latency. Future candles are excluded from model input and historical browser responses, but that cannot rule out a model remembering market history from training. Fresh API decisions can differ between runs. This is an observation and experimentation tool, not a validated trading system.
+
+## Development
+
+React + Vite + TypeScript frontend, FastAPI backend, SQLite storage, and TypeSafe SDK. Production frontend files are served by FastAPI. This version needs a running backend and persistent local storage, so a static Vercel deployment alone is insufficient.
+
+```powershell
+# Terminal 1
+.venv\Scripts\python.exe -m uvicorn server.app:app --host 127.0.0.1 --port 8765
+# Terminal 2
+npm run dev
+# Checks
+.venv\Scripts\python.exe -m pytest -q
+npm run build
+# Real-market smoke check; adding --jev makes one model API call
+.venv\Scripts\python.exe scripts/smoke.py
+```
+
+[Design notes](docs/design.md) · [Verification notes](docs/verification.md)
+
+## Related Jev experiments
+
+- [Driving Jev](https://github.com/chahero/driving-jev) — driving decisions with Jev.
+- [Tetris Jev](https://github.com/chahero/tetris-jev) — watching Jev play Tetris.

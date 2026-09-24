@@ -1,0 +1,44 @@
+{
+  "symbol": "BTCUSDT",
+  "interval": "15m",
+  "start_utc": "2025-01-01",
+  "steps_per_strategy": 48,
+  "initial_usdt": 10000,
+  "fee_bps": 10,
+  "slippage_bps": 5,
+  "warmup_bars": 96,
+  "video_type": "Replay of recorded decisions; inference waiting time is not shown",
+  "ui_language": "Korean",
+  "source_commit": "c9a970e2d84d5f8cc15a40d1654360d93f26cfd5",
+  "policy_sha256": "c1d08e481a9dcce21090aeb295c01bf41de1cddf5231026d409d3576bb88dbaf",
+  "runs": {
+    "rule": {
+      "id": "6935af6a29234e84912b816a59494f51",
+      "decisions": 48,
+      "api_calls": 0,
+      "trades": 4,
+      "final_equity_usdt": 9938.717997288652,
+      "return_pct": -0.6128200271134809,
+      "max_drawdown_pct": 0.6128200271134847,
+      "fees_usdt": 9.99059131733658,
+      "mean_latency_ms": null,
+      "first_fill_time_ms": 1735689600000,
+      "last_mark_time_ms": 1735732799999,
+      "record_sha256": "6f2dd9917ef6e4be92a9ed29cca94825b400b8161bbfad55911ff525567dea21"
+    },
+    "jev": {
+      "id": "3a831acdbfbc4e17805ce3435ee34b6f",
+      "decisions": 48,
+      "api_calls": 48,
+      "trades": 3,
+      "final_equity_usdt": 9941.782518075212,
+      "return_pct": -0.5821748192478826,
+      "max_drawdown_pct": 0.7621804051814252,
+      "fees_usdt": 5.0248348825954645,
+      "mean_latency_ms": 836.7291666666666,
+      "first_fill_time_ms": 1735689600000,
+      "last_mark_time_ms": 1735732799999,
+      "record_sha256": "0983fce201a03b618c785992babb0136411a23c1dd0fc2a83bcfa8977ab57e08"
+    }
+  }
+}
