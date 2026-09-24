@@ -1,0 +1,14 @@
+{
+  "run_id": "3b8c9d800e734e8ea58cbf47abe722a1",
+  "start": "2025-01-01",
+  "end_exclusive": "2025-01-31",
+  "max_calls": 2880,
+  "checkpoints_days": [
+    7,
+    30
+  ],
+  "source_commit": "29e78e3469170dd2131eb695bc295a55c09467e1",
+  "source_sha256": "a0891d8114938c5c632a698ca7ec63eb03b249f4765c498da14256e472617eaf",
+  "started_at_unix": 1790253791.089167,
+  "note": "Day 7 is a nested checkpoint of the same 30-day account, not an independent trial."
+}

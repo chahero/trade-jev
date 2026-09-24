@@ -27,6 +27,25 @@ These are **replays of saved decisions**, with one 15-minute step per video seco
 
 A single short demonstration, not evidence of strategy profitability. Equity includes unsold BTC; drawdown is measured at candle closes. [Recording details and reproduction](media/README.md) · [Exact results](media/demo-results.json).
 
+## 7-day and 30-day experiment
+
+A completed 30-day run on **January 1–30, 2025 (UTC)**, with a checkpoint after the first seven days. Jev made **2,880 API calls**, including the first **672 calls** at day 7. These are two observations of the same account, not independent trials. The videos above remain the separate 12-hour demo.
+
+All accounts start with 10,000 USDT and use the same 15-minute candles, 0.10% fee and 0.05% slippage per side. Jev uses the same decision instructions throughout, with 96 preceding closed candles per request.
+
+| Strategy | 7-day return | 7-day max drawdown | 30-day return | 30-day max drawdown |
+| --- | ---: | ---: | ---: | ---: |
+| Jev | +1.56% | 3.07% | +2.81% | 5.11% |
+| Rule | +3.39% | 2.08% | -1.18% | 9.25% |
+| Buy & hold | +3.46% | 6.05% | +11.74% | 11.43% |
+| Cash | +0.00% | 0.00% | +0.00% | 0.00% |
+
+In this period, Jev returned less than buy-and-hold and had a smaller drawdown. It chose 25% BTC in 2,127 decisions, 50% in 750, and cash in three; it never chose 75% or 100%. Its mean cash allocation at candle closes was **68.51%**. This limited exposure matters when interpreting the comparison; the result alone does not establish better market timing.
+
+Fills, fees, and equity curves were checked by replaying the saved ledger without new model calls. Returns include open BTC positions and simulated costs; drawdown uses candle closes. This is one historical period, without a fixed 25%/50% allocation baseline or repeated Jev trials. It does not establish performance across market regimes or in live trading.
+
+[Detailed report](docs/experiments/2025-01/REPORT.md) · [7-day data](docs/experiments/2025-01/day-7-summary.json) · [30-day data](docs/experiments/2025-01/day-30-summary.json)
+
 ## What you can explore
 
 - **Historical simulation:** step through 15-minute candles or run a selected UTC date range.

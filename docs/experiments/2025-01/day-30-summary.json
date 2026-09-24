@@ -1,0 +1,57 @@
+{
+  "days": 30,
+  "run_id": "3b8c9d800e734e8ea58cbf47abe722a1",
+  "decisions": 2880,
+  "api_calls": 2880,
+  "start": "2025-01-01",
+  "end_exclusive": "2025-01-31",
+  "metrics": {
+    "selected": {
+      "equity": 10280.561450438672,
+      "return_pct": 2.805614504386722,
+      "max_drawdown": 0.051072211382671776,
+      "fees": 13.213302052653122,
+      "trades": 385,
+      "allocation": 24.890821681616828,
+      "cash": 7721.645231940942,
+      "btc": 0.024435106754047684
+    },
+    "buy_hold": {
+      "equity": 11174.450570551444,
+      "return_pct": 11.744505705514442,
+      "max_drawdown": 0.11429146538628161,
+      "fees": 9.990009990009991,
+      "trades": 1,
+      "allocation": 100.0,
+      "cash": 0.0,
+      "btc": 0.10670489742315718
+    },
+    "rule": {
+      "equity": 9881.624007329912,
+      "return_pct": -1.183759926700878,
+      "max_drawdown": 0.09252758813299528,
+      "fees": 644.0435988222325,
+      "trades": 204,
+      "allocation": 0.0,
+      "cash": 9881.624007329912,
+      "btc": 0.0
+    },
+    "cash": {
+      "equity": 10000.0,
+      "return_pct": 0,
+      "max_drawdown": 0,
+      "fees": 0,
+      "trades": 0,
+      "allocation": 0,
+      "cash": 10000.0,
+      "btc": 0
+    }
+  },
+  "target_counts": {
+    "0": 3,
+    "50": 750,
+    "25": 2127
+  },
+  "mean_cash_allocation_pct": 68.51494886625868,
+  "mean_latency_ms": 856.0274305555556
+}
